@@ -1,20 +1,22 @@
 export type ISO8601Time = string;
 export type ReviewDayType = number;
 
-export type TasksType = Task[] | null;
+
 
 export type Task = {
     id: number;
     name: string;
-    review_at : ReviewDayType;
     created_at: ISO8601Time;
-    reviews: TasksType
+    reviews: Map<number, number>
 };
 
 
 export type Project = {
     name: string;
     started_at: string;
+    mode: number;
+    ended_at: string | null;
+    duration: number | null;
     period_day_num: number;
     total: number;
 }
