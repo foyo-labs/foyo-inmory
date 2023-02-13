@@ -5,15 +5,34 @@ import { find } from 'lodash'
 
 export const createTasksAction = (project: Project) => {
     var tasks: Task[] = []
-    if (project.started_at == '') return tasks
     const start = moment(project.started_at)
-    // if( project.mode === 1){
-    //     const duration = project.duration || 1
-    // }
     const start_seq  = 1
+    var dateRange = Number(project.duration)
+    var doing_date = ""
+    const period_day_num = Number(project.period_day_num)
+    const total = Number(project.total)
+    var name = ""
+    if (project.mode == 1){
+        doing_date = "/　　　/"
+    }else {
+        dateRange = total * (1 / period_day_num)
+    }
 
-    for(var i = start_seq; i<= 31; i++){
-        const date = start.add(1, 'days')
+    var l = 0
+
+    for(var i = start_seq; i < dateRange; i++){
+        name = ""
+        if( project.mode == 2){
+            doing_date = start.add(i, 'days').format("YY/MM/DD")
+            for( var j = 0; j < period_day_num; j++){
+                name += project.prefix + "" + (l + 1)
+                if(j < period_day_num -1){
+                    name += " ~ "
+                }
+                l ++
+            }
+            
+        }
         var _reviews: Map<number, number>  = new Map()
         const review_days = [1, 2, 4, 7, 15, 30, 90, 180]
         review_days.forEach( (d) => {
@@ -24,8 +43,8 @@ export const createTasksAction = (project: Project) => {
         } )
         tasks.push({
             id: i,
-            name: "",
-            created_at: date.format("yyyy-MM-dd"),
+            name: name,
+            created_at: doing_date,
             reviews: _reviews
         })
     }

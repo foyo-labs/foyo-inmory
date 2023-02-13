@@ -1,5 +1,6 @@
 .timetable {
     border: 1px;
+    border-color: rgb(100 116 139);
     width: 100%;
     font-size: 13px;
     border-collapse: collapse;
@@ -17,13 +18,14 @@
 
 .timetable td,
 .timetable th {
-    padding: 5px;
+    padding: 0px;
     vertical-align: middle;
     text-align: center;
+    font-size: 12px;
 }
 
 .timetable tr,
 .timetable td,
 .timetable th {
-    border: 1px solid #656a76;
+    border: 1px solid rgb(100 116 139);
 }

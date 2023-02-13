@@ -15,9 +15,9 @@ export type Project = {
     name: string;
     started_at: string;
     mode: number;
-    ended_at: string | null;
     duration: number | null;
     period_day_num: number;
+    prefix: string | null;
     total: number;
 }
 

@@ -6,8 +6,9 @@ import { useForm } from 'react-hook-form';
 import { Project, Task } from '@/types/Types';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { registerLocale, setDefaultLocale } from  "react-datepicker";
+import { registerLocale, setDefaultLocale } from "react-datepicker";
 import zhCN from 'date-fns/locale/zh-CN';
+import moment from 'moment'
 import { createTasksAction } from '../service/TaskService'
 setDefaultLocale(zhCN)
 
@@ -24,12 +25,21 @@ export default function Home() {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data: Project) => {
+  const onSubmit1 = (data: Project) => {
     data.started_at = started
+    data.mode = 1
     setTitle(data.name)
-    console.log(JSON.stringify(data))
+    console.log(data.name)
     const res = createTasksAction(data)
-    console.log(res)
+    setTasks(res)
+  }
+
+  const onSubmit2 = (data: Project) => {
+    data.started_at = started
+    data.mode = 2
+    setTitle(data.name)
+    console.log(data)
+    const res = createTasksAction(data)
     setTasks(res)
   }
 
@@ -53,68 +63,70 @@ export default function Home() {
         <div className='relative z-10 mx-auto px-2 pb-2 pt-10 sm:px-6 md:max-w-2xl md:px-2 lg:min-h-full lg:flex-auto lg:border-x lg:border-slate-200 lg:py-12 lg:px-8 xl:px-12'>
           <div className='text-center lg:text-left'>
             <p className="text-xl font-bold text-slate-900"><a href="/">Inmory</a></p>
-            <p className="mt-3 text-lg font-medium leading-8 text-slate-700">艾宾浩斯记忆计划表生成工具，有规律、有计划的背诵词汇，古诗。</p>
+            <p className="mt-3 text-lg font-medium leading-8 text-slate-700">艾宾浩斯记忆计划生成工具</p>
           </div>
           <section className="mt-12 hidden lg:block">
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(onSubmit1)}>
               <h2 className="flex items-center font-mono text-sm font-medium leading-7 text-slate-900">
                 <svg aria-hidden="true" viewBox="0 0 10 10" className="h-2.5 w-2.5"><path d="M0 5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V5Z" className="fill-violet-300"></path><path d="M6 1a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V1Z" className="fill-pink-300"></path></svg>
-                <span className="ml-2.5">生成记忆表</span>
+                <span className="ml-2.5">仅计划表</span>
               </h2>
               <div className="mt-2 text-base leading-7 text-slate-700 lg:line-clamp-4">
 
                 <div className='col-span-6 sm:col-span-4 mt-4'>
                   <label htmlFor="name" className="block text-sm font-medium mb-2 font-mono text-slate-500">计划名称</label>
-                  <input {...register('name')} value="3月功克雅思单词" type="text" name="name" id="name" className="px-2 py-2 block w-full rounded-md border-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"/>
+                  <input {...register('name')} value="30天攻克300单词" type="text" name="name" id="name" className="px-2 py-2 block w-full rounded-md border-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
                 </div>
 
                 <div className='col-span-6 sm:col-span-4 mt-4'>
-                  <label className="block text-sm font-medium mb-2 font-mono text-slate-500">生成方式</label>
-                  <div className="mt-4 space-y-4">
-                    <div className="flex items-center">
-                      <input id="push-everything" {...register("mode")} name="mode" type="radio" className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500" />
-                      <label htmlFor="push-everything" className="ml-3 block text-sm font-medium text-gray-700">无计划内容</label>
-                    </div>
-                    <div className="flex items-center">
-                      <input id="push-everything" {...register("mode")} name="mode" type="radio" className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500" />
-                      <label htmlFor="push-everything" className="ml-3 block text-sm font-medium text-gray-700">有计划内容</label>
-                    </div>
-                  </div>
+                  <label htmlFor="price" className="block text-sm font-medium mb-2 font-mono text-slate-500">持续周期(天)</label>
+                  <input {...register('duration')} value="30" type="text" name="duration" id="duration" className="px-2 py-2 block w-full rounded-md border-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
                 </div>
 
                 <div className='col-span-6 sm:col-span-4 mt-4'>
-                  <label htmlFor="price" className="block text-sm font-medium mb-2 font-mono text-slate-500">开始日期</label>
-                  <DatePicker dateFormatCalendar='yyyy LLLL' dateFormat='yyyy/MM/dd' selected={started} onChange={handleDateChange} className="px-2 py-2 block w-full rounded-md border-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"/>
+                  <button type="submit" className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">生成表格</button>
                 </div>
 
-                <div className='col-span-6 sm:col-span-4 mt-4'>
-                  <label htmlFor="price" className="block text-sm font-medium mb-2 font-mono text-slate-500">持续周期</label>
-                  <select {...register('duration')} id="country" name="country" className="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500">
-                    <option value={1}>1月</option>
-                    <option value={2}>2月</option>
-                    <option value={3}>3月</option>
-                    <option value={6}>半年</option>
-                  </select>
-                </div>
 
-                <div className='col-span-6 sm:col-span-4 mt-4'>
-                  <label htmlFor="price" className="block text-sm font-medium text-gray-700">任务名</label>
-                  <input type="text" name="name" id="name" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
-                </div>
+              </div>
+            </form>
+          </section>
 
-                <div className='col-span-6 sm:col-span-4 mt-4'>
-                  <label htmlFor="price" className="block text-sm font-medium text-gray-700">日计划数</label>
-                  <select id="country" name="country" className="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500">
-                    <option></option>
-                    <option>1/2页</option>
-                    <option>1页</option>
-                    <option>2页</option>
-                  </select>
-                </div>
+          <section className="mt-12 hidden lg:block">
+            <form onSubmit={handleSubmit(onSubmit2)}>
+              <h2 className="flex items-center font-mono text-sm font-medium leading-7 text-slate-900">
+                <svg aria-hidden="true" viewBox="0 0 10 10" className="h-2.5 w-2.5"><path d="M0 5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V5Z" className="fill-violet-300"></path><path d="M6 1a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V1Z" className="fill-pink-300"></path></svg>
+                <span className="ml-2.5">有内容记忆表</span>
+              </h2>
+              <div className='col-span-6 sm:col-span-4 mt-4'>
+                  <label htmlFor="name" className="block text-sm font-medium mb-2 font-mono text-slate-500">计划名称</label>
+                  <input {...register('name')} value="30天攻克300单词" type="text" name="name" id="name" className="px-2 py-2 block w-full rounded-md border-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+              </div>
+              <div className='col-span-6 sm:col-span-4 mt-4'>
+                <label htmlFor="price" className="block text-sm font-medium mb-2 font-mono text-slate-500">开始日期</label>
+                <DatePicker defaultValue={moment.now()} dateFormatCalendar='yyyy LLLL' dateFormat='yyyy/MM/dd' selected={started} onChange={handleDateChange} className="px-2 py-2 block w-full rounded-md border-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
               </div>
 
               <div className='col-span-6 sm:col-span-4 mt-4'>
-                <button type="submit" className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">重新生成</button>
+                <label htmlFor="price" className="block text-sm font-medium mb-2 font-mono text-slate-500">日计划数</label>
+                <select id="period_day_num" defaultValue={1} {...register('period_day_num')} name="period_day_num" className="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500">
+                  <option value={1}>1页</option>
+                  <option value={2}>2页</option>
+                </select>
+              </div>
+
+              <div className='col-span-6 sm:col-span-4 mt-4'>
+                <label htmlFor="price" className="block text-sm font-medium mb-2 font-mono text-slate-500">内容前缀,如"P"表达页码</label>
+                <input type="text" {...register('prefix')} value={'P'} placeholder='输入页码标识，如P' name="prefix" id="prefix" className="px-2 py-2 block w-full rounded-md border-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+              </div>
+
+              <div className='col-span-6 sm:col-span-4 mt-4'>
+                <label htmlFor="price" className="block text-sm font-medium mb-2 font-mono text-slate-500">总页数</label>
+                <input type="text" value={'30'} {...register('total')} name="total" id="total" className="px-2 py-2 block w-full rounded-md border-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+              </div>
+
+              <div className='col-span-6 sm:col-span-4 mt-4'>
+                <button type="submit" className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">生成表格</button>
               </div>
             </form>
           </section>
@@ -147,22 +159,22 @@ export default function Home() {
                   </tr>
                 </thead>
                 <tbody>
-                  {tasks.map( (task: Task) => 
-                  <tr key={task.id}>
-                    <td>{task.id}</td>
-                    <td>{""}</td>
-                    <td style={{ 'textAlign': 'left' }}>
-                      {task.name}
-                    </td>
-                    <td>{ task.reviews.get(1) }</td>
-                    <td>{ task.reviews.get(2) }</td>
-                    <td>{ task.reviews.get(4) }</td>
-                    <td>{ task.reviews.get(7) }</td>
-                    <td>{ task.reviews.get(15) }</td>
-                    <td>{ task.reviews.get(30) }</td>
-                    <td>{ task.reviews.get(90) }</td>
-                    <td>{ task.reviews.get(180) }</td>
-                  </tr>
+                  {tasks.map((task: Task) =>
+                    <tr key={task.id}>
+                      <td>{task.id}</td>
+                      <td>{task.created_at}</td>
+                      <td style={{ 'textAlign': 'left', 'paddingLeft': '5px' }}>
+                        {task.name}
+                      </td>
+                      <td>{task.reviews.get(1)}</td>
+                      <td>{task.reviews.get(2)}</td>
+                      <td>{task.reviews.get(4)}</td>
+                      <td>{task.reviews.get(7)}</td>
+                      <td>{task.reviews.get(15)}</td>
+                      <td>{task.reviews.get(30)}</td>
+                      <td>{task.reviews.get(90)}</td>
+                      <td>{task.reviews.get(180)}</td>
+                    </tr>
                   )}
                 </tbody>
               </table>
