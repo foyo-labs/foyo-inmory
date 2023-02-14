@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Head from 'next/head';
 import { Inter } from '@next/font/google';
 import styles from '@/styles/Home.module.css';
@@ -6,16 +6,21 @@ import { useForm } from 'react-hook-form';
 import { Project, Task } from '@/types/Types';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { registerLocale, setDefaultLocale } from "react-datepicker";
+import { setDefaultLocale } from "react-datepicker";
+import ReactToPrint from 'react-to-print'
+import { usePrint } from '@/component/Print.hook';
 import zhCN from 'date-fns/locale/zh-CN';
 import moment from 'moment'
 import { createTasksAction } from '../service/TaskService'
+import TablePrinter from '@/component/TablePrinter';
 setDefaultLocale(zhCN)
 
 const inter = Inter({ subsets: ['latin'] })
 export default function Home() {
 
-  const [started, setStarted] = useState('')
+  const tasksRef = React.createRef()
+
+  const [started, setStarted] = useState(new Date())
   const [tasks, setTasks] = useState([])
   const [title, setTitle] = useState('')
 
@@ -48,6 +53,10 @@ export default function Home() {
     setStarted(startDate)
   };
 
+  async function handlePrintAsync() {
+    printTasks()
+  }
+
   return (
     <>
       <Head>
@@ -63,7 +72,7 @@ export default function Home() {
         <div className='relative z-10 mx-auto px-2 pb-2 pt-10 sm:px-6 md:max-w-2xl md:px-2 lg:min-h-full lg:flex-auto lg:border-x lg:border-slate-200 lg:py-12 lg:px-8 xl:px-12'>
           <div className='text-center lg:text-left'>
             <p className="text-xl font-bold text-slate-900"><a href="/">Inmory</a></p>
-            <p className="mt-3 text-lg font-medium leading-8 text-slate-700">艾宾浩斯记忆计划生成工具</p>
+            <p className="mt-3 text-lg font-medium leading-8 text-slate-700">计划表生成工具</p>
           </div>
           <section className="mt-12 hidden lg:block">
             <form onSubmit={handleSubmit(onSubmit1)}>
@@ -99,12 +108,12 @@ export default function Home() {
                 <span className="ml-2.5">有内容记忆表</span>
               </h2>
               <div className='col-span-6 sm:col-span-4 mt-4'>
-                  <label htmlFor="name" className="block text-sm font-medium mb-2 font-mono text-slate-500">计划名称</label>
-                  <input {...register('name')} value="30天攻克300单词" type="text" name="name" id="name" className="px-2 py-2 block w-full rounded-md border-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                <label htmlFor="name" className="block text-sm font-medium mb-2 font-mono text-slate-500">计划名称</label>
+                <input {...register('name')} value="30天攻克300单词" type="text" name="name" id="name" className="px-2 py-2 block w-full rounded-md border-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
               </div>
               <div className='col-span-6 sm:col-span-4 mt-4'>
                 <label htmlFor="price" className="block text-sm font-medium mb-2 font-mono text-slate-500">开始日期</label>
-                <DatePicker defaultValue={moment.now()} dateFormatCalendar='yyyy LLLL' dateFormat='yyyy/MM/dd' selected={started} onChange={handleDateChange} className="px-2 py-2 block w-full rounded-md border-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                <DatePicker dateFormatCalendar='yyyy LLLL' dateFormat='yyyy/MM/dd' selected={started} onChange={handleDateChange} className="px-2 py-2 block w-full rounded-md border-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
               </div>
 
               <div className='col-span-6 sm:col-span-4 mt-4'>
@@ -138,7 +147,7 @@ export default function Home() {
           <div className='pt-16 pb-12 px-4 sm:pb-4 lg:pt-12'>
             <div className="divide-y divide-slate-100 sm:mt-4 lg:mt-8 ">
               <h1 className="text-2xl font-bold leading-7 text-slate-900">艾宾浩斯记忆表</h1>
-              <table cellPadding='0' cellSpacing="0" className={styles.timetable}>
+              <table cellPadding='0' cellSpacing="0" className={styles.timetable} ref={tasksRef}>
                 <caption><p className={styles.caption}>{title}</p></caption>
                 <thead>
                   <tr>
@@ -178,6 +187,11 @@ export default function Home() {
                   )}
                 </tbody>
               </table>
+              <ReactToPrint
+                trigger={() => <button type="button" className="mt-2 inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">打印计划表</button>}
+                content={() => tasksRef.current}
+              />
+              {/* <button type="button" onClick={handlePrintAsync} className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">导出Excel</button> */}
             </div>
           </div>
         </div>

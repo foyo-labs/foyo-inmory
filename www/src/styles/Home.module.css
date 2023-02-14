@@ -29,3 +29,37 @@
 .timetable th {
     border: 1px solid rgb(100 116 139);
 }
+
+@media print {
+    .timetable {
+        border: 1px;
+        border-color: rgb(100 116 139);
+        width: 100%;
+        font-size: 13px;
+        border-collapse: collapse;
+    }
+    
+    .timetable .caption {
+        padding: 1em 0;
+        font-size: 16px;
+        font-weight: 300;
+    }
+    
+    .timetable th {
+        font-weight: bold;
+    }
+    
+    .timetable td,
+    .timetable th {
+        padding: 0px;
+        vertical-align: middle;
+        text-align: center;
+        font-size: 12px;
+    }
+    
+    .timetable tr,
+    .timetable td,
+    .timetable th {
+        border: 1px solid rgb(100 116 139);
+    }
+}

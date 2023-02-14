@@ -20,10 +20,10 @@ export const createTasksAction = (project: Project) => {
 
     var l = 0
 
-    for(var i = start_seq; i < dateRange; i++){
+    for(var i = start_seq; i <= dateRange; i++){
         name = ""
         if( project.mode == 2){
-            doing_date = start.add(i, 'days').format("YY/MM/DD")
+            doing_date = start.add(i-1, 'days').format("YY/MM/DD")
             for( var j = 0; j < period_day_num; j++){
                 name += project.prefix + "" + (l + 1)
                 if(j < period_day_num -1){
